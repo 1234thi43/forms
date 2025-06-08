@@ -1,0 +1,7 @@
+.content {
+	display: none;
+}
+
+input[type="checkbox"]:checked + .content {
+	display: block;
+}
