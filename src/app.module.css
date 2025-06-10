@@ -2,6 +2,10 @@
 	display: none;
 }
 
-input[type="checkbox"]:checked + .content {
+input[type='checkbox']:checked + .content {
 	display: block;
+}
+
+.errorLabel {
+	color: red;
 }

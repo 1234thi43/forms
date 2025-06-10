@@ -1,30 +1,44 @@
+import { useForm } from 'react-hook-form';
 import './App.css';
-import Select from 'react-select';
+import styles from './app.module.css';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+
+const fieldScheme = yup.object().shape({
+	login: yup
+		.string()
+		.matches(/^[\w_]*$/, 'Цифры буквы и нижнее подчеркивание')
+		.max(20, 'Не более 20 символов')
+		.min(3, 'Не менее 3 символов'),
+});
 
 function App() {
-	const productOptions = [
-		{ value: 'tv', label: 'Телевизор' },
-		{ value: 'phone', label: 'Телефон' },
-		{ value: 'laptop', label: 'Ноутбук' },
-	];
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm({
+		defaultValues: {
+			login: '',
+		},
+		// mode: 'onChange',
+		resolver: yupResolver(fieldScheme),
+	});
 
-	const colorOptions = [
-		{ value: 'black', label: 'Черный' },
-		{ value: 'white', label: 'Белый' },
-		{ value: 'silver', label: 'Серебристый' },
-		{ value: 'gold', label: 'Золотой' },
-		{ value: 'platina', label: 'Платиновый' },
-	];
+	const loginError = errors.login?.message;
+
+	const onSubmit = (formData) => {
+		console.log(formData);
+	};
 
 	return (
-		<div>
-			<Select options={productOptions} defaultValue={productOptions[0]} />
-			<Select
-				isMulti
-				options={colorOptions}
-				defaultValue={[colorOptions[0], colorOptions[2]]}
-			/>
-		</div>
+		<form onSubmit={handleSubmit(onSubmit)}>
+			{loginError && <div className={styles.errorLabel}>{loginError}</div>}
+			<input name="login" type="text" {...register('login')} />
+			<button type="submit" disabled={!!loginError}>
+				Отправить
+			</button>
+		</form>
 	);
 }
 
