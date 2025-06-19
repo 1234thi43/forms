@@ -1,6 +1,6 @@
 import './App.css';
 import styles from './app.module.css';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -36,6 +36,16 @@ function Form() {
 		resolver: yupResolver(schema),
 	});
 
+	useEffect(() => {
+		if (isValid && submitButtonRef.current) {
+			//   без useEffect и задержки не работает фокус
+			const timer = setTimeout(() => {
+				submitButtonRef.current.focus();
+			}, 10);
+			return () => clearTimeout(timer);
+		}
+	}, [isValid]);
+
 	const onSubmit = (data) => {
 		console.log('Отправляем форму:', data);
 		reset();
@@ -47,7 +57,13 @@ function Form() {
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<div className={styles.formGroup}>
 					<label htmlFor="email">Email:</label>
-					<input type="text" id="email" {...register('email')} />
+					<input
+						type="text"
+						id="email"
+						{...register('email')}
+						aria-describedby="emailError"
+						aria-invalid={!!errors.email}
+					/>
 					{errors.email && (
 						<span id={styles.emailError} className={styles.errorLabel}>
 							{errors.email?.message}
@@ -57,7 +73,13 @@ function Form() {
 
 				<div className={styles.formGroup}>
 					<label htmlFor="password">Password:</label>
-					<input type="password" id="password" {...register('password')} />
+					<input
+						type="password"
+						id="password"
+						{...register('password')}
+						aria-describedby="passwordError"
+						aria-invalid={!!errors.password}
+					/>
 					{errors.password && (
 						<span id={styles.passwordError} className={styles.errorLabel}>
 							{errors.password?.message}
@@ -71,6 +93,8 @@ function Form() {
 						type="password"
 						id="confirmPassword"
 						{...register('confirmPassword')}
+						aria-describedby="confirmPasswordError"
+						aria-invalid={!!errors.confirmPassword}
 					/>
 					{errors.confirmPassword && (
 						<span
